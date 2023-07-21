@@ -7,6 +7,8 @@ import postsRoutes from "./routes/posts.js"
 import commentRoutes from "./routes/comments.js"
 import reimbusementRoutes from "./routes/reimbursements.js"
 import rekeningRoutes from "./routes/rekenings.js"
+import jenisReims from "./routes/jenisReims.js"
+import acaraRoutes from "./routes/acaras.js"
 import multer from "multer";
 
 const app = express()
@@ -23,22 +25,6 @@ app.use(cors({
     })
 );
 app.use(cookieParser());
-
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//       cb(null, '../client/public/upload')
-//     },
-//     filename: function (req, file, cb) {
-//       cb(null, Date.now() + file.originalname)
-//     }
-//   })
-  
-// const upload = multer({ storage: storage })
-
-// app.post("/api/uploadProfile", upload.single("file"), (req, res)=>{
-//   const file = req.file;
-//   res.status(200).json(file.filename);
-// })
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -102,7 +88,8 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/reims", reimbusementRoutes);
 app.use("/api/rekening", rekeningRoutes);
-
+app.use("/api/jenisReims", jenisReims);
+app.use("/api/acara", acaraRoutes);
 
 
 app.listen(8800, () =>{

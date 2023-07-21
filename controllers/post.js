@@ -71,8 +71,6 @@ export const updatePost = (req, res)=>{
 
             const q = "UPDATE news SET `desc`=?, `img`=?, `createdAt`=? WHERE id = ?"
 
-            console.log("desc" + req.body.desc)
-
             db.query(q, [
                 req.body.desc,
                 req.body.img,
