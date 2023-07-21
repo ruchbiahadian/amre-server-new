@@ -66,3 +66,46 @@ export const getAcara = (req, res) =>{
 
         })
  }
+
+ export const addAcara = (req, res) =>{
+    const token = req.cookies.accessToken;
+    if(!token) return res.status(401).json("Not logged in!")
+
+        jwt.verify(token, "secretkey", (err, userInfo)=>{
+            if(err) return res.status(403).json("Token is not valid!")
+
+            const q = "INSERT INTO acara (`namaAcara`, `reimbursement_status`, `plafon`, `absensi_status`, `maxAbsen`, `createdAt`) VALUES (?)";
+
+            const values = [
+                req.body.namaAcara,
+                req.body.reimbursement_status,
+                req.body.plafon,
+                req.body.absensi_status,
+                req.body.maxAbsen,
+                moment(Date.now()).format("YYYY-MM-DD HH:mm:ss")
+            ];
+
+            db.query(q, [values], (err, data) =>{
+                if (err) return res.status(500).json(err);
+                return res.status(200).json("Reimbursement has been created");
+        
+        });
+    });
+};
+
+export const activeAcara = (req, res) =>{
+    const token = req.cookies.accessToken;
+    if(!token) return res.status(401).json("Not logged in!")
+
+        jwt.verify(token, "secretkey", (err, userInfo)=>{
+            if(err) return res.status(403).json("Token is not valid!")
+
+            const q = `SELECT namaAcara FROM acara WHERE reimbursement_status = "Aktif";`;
+
+            db.query(q, (err, data) =>{
+                if (err) return res.status(500).json(err);
+                return res.status(200).json(data);
+        
+        });
+    });
+};

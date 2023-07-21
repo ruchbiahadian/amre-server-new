@@ -9,6 +9,7 @@ import reimbusementRoutes from "./routes/reimbursements.js"
 import rekeningRoutes from "./routes/rekenings.js"
 import jenisReims from "./routes/jenisReims.js"
 import acaraRoutes from "./routes/acaras.js"
+import absensiRoutes from "./routes/absensis.js"
 import multer from "multer";
 
 const app = express()
@@ -90,7 +91,7 @@ app.use("/api/reims", reimbusementRoutes);
 app.use("/api/rekening", rekeningRoutes);
 app.use("/api/jenisReims", jenisReims);
 app.use("/api/acara", acaraRoutes);
-
+app.use("/api/absensi", absensiRoutes);
 
 app.listen(8800, () =>{
     console.log("API is working!")

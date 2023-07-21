@@ -32,7 +32,7 @@ export const getPengajuan = (req, res) =>{
 
             const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, users.nama, users.email, users.jenis, users.tahun FROM reimbursements 
             JOIN rekening ON reimbursements.userId = rekening.userId JOIN users ON reimbursements.userId = users.id
-            WHERE reimbursements.status = "Diajukan"  `;
+            WHERE reimbursements.status = "Diajukan" ORDER BY reimbursements.createdAt DESC `;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);
