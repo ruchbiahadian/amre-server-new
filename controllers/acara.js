@@ -100,7 +100,41 @@ export const activeAcara = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT namaAcara FROM acara WHERE reimbursement_status = "Aktif";`;
+            const q = `SELECT id, namaAcara FROM acara WHERE reimbursement_status = "Aktif";`;
+
+            db.query(q, (err, data) =>{
+                if (err) return res.status(500).json(err);
+                return res.status(200).json(data);
+        
+        });
+    });
+};
+
+export const nonActiveAcara = (req, res) =>{
+    const token = req.cookies.accessToken;
+    if(!token) return res.status(401).json("Not logged in!")
+
+        jwt.verify(token, "secretkey", (err, userInfo)=>{
+            if(err) return res.status(403).json("Token is not valid!")
+
+            const q = `SELECT id, namaAcara FROM acara WHERE reimbursement_status = "Nonaktif";`;
+
+            db.query(q, (err, data) =>{
+                if (err) return res.status(500).json(err);
+                return res.status(200).json(data);
+        
+        });
+    });
+};
+
+export const activeAcaraAbsence = (req, res) =>{
+    const token = req.cookies.accessToken;
+    if(!token) return res.status(401).json("Not logged in!")
+
+        jwt.verify(token, "secretkey", (err, userInfo)=>{
+            if(err) return res.status(403).json("Token is not valid!")
+
+            const q = `SELECT * FROM acara WHERE absensi_status = "Aktif";`;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);

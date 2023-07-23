@@ -1,10 +1,11 @@
 import express from "express";
-import { getReim, addReim, deleteReim, updateReim, getPengajuan, reimTerima, reimTolak, getDitolak, getDisetujui } from "../controllers/reimbursement.js";
+import { getReim, addReim, deleteReim, updateReim, getPengajuan, reimTerima, reimTolak, getDitolak, getDisetujui, checkReim } from "../controllers/reimbursement.js";
 
 const router = express.Router()
 
 
 router.get("/find/:userId", getReim)
+router.get("/checkReim/:acaraId", checkReim)
 router.get("/getPengajuan", getPengajuan)
 router.get("/getDisetujui", getDisetujui)
 router.get("/getDitolak", getDitolak)

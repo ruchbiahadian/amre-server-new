@@ -10,6 +10,8 @@ import rekeningRoutes from "./routes/rekenings.js"
 import jenisReims from "./routes/jenisReims.js"
 import acaraRoutes from "./routes/acaras.js"
 import absensiRoutes from "./routes/absensis.js"
+import akunRoutes from "./routes/akuns.js"
+import laporanRoutes from "./routes/laporans.js"
 import multer from "multer";
 
 const app = express()
@@ -68,6 +70,21 @@ app.post("/api/uploadInvoice", (req, res) => {
   });
 });
 
+app.post("/api/uploadAbsence", (req, res) => {
+  const uploadPath = '../client/public/absence';
+  
+  req.uploadPath = uploadPath;
+  
+  upload.single("file")(req, res, function (err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    const file = req.file;
+    res.status(200).json(file.filename);
+  });
+});
+
 app.post("/api/upload", (req, res) => {
   const uploadPath = '../client/public/news';
   
@@ -92,6 +109,8 @@ app.use("/api/rekening", rekeningRoutes);
 app.use("/api/jenisReims", jenisReims);
 app.use("/api/acara", acaraRoutes);
 app.use("/api/absensi", absensiRoutes);
+app.use("/api/akun", akunRoutes);
+app.use("/api/laporan", laporanRoutes);
 
 app.listen(8800, () =>{
     console.log("API is working!")

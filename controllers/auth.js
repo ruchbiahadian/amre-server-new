@@ -3,67 +3,49 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const register = (req, res) => {
-    const q = "SELECT * FROM users WHERE email = ?";
-  
-    db.query(q, [req.body.email], (err, data) => {
+  const q = "SELECT email FROM (SELECT email FROM waiting_register WHERE email = ? UNION SELECT email FROM users WHERE email = ?) AS mix;";
+
+  db.query(q, [req.body.email, req.body.email], (err, data) => {
+    if (err) return res.status(500).json(err);
+    console.log(data)
+    if (data.length) return res.status(409).json("Email sudah terdaftar atau anda dalam proses menunggu persetujuan admin");
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+
+    const q = "INSERT INTO waiting_register (`email`, `nama`, `jenisMagang`, `tahunMagang`,  `password`) VALUES (?)";
+
+    const values = [
+      req.body.email,
+      req.body.nama,
+      req.body.jenis,
+      req.body.tahun,
+      hashedPassword,
+    ];
+
+    db.query(q, [values], (err, data) => {
       if (err) return res.status(500).json(err);
-      if (data.length) return res.status(409).json("User already exists!");
-  
-      const salt = bcrypt.genSaltSync(10);
-      const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-  
-      const q = "INSERT INTO users (`email`, `nama`, `noTelp`, `univ`,  `jenis`, `tahun`, `domisili`, `password`, `profilePic`) VALUES (?)";
-  
-      const values = [
-        req.body.email,
-        req.body.nama,
-        "Belum diisi",
-        "Belum diisi",
-        req.body.jenis,
-        req.body.tahun,
-        "Belum diisi",
-        hashedPassword,
-        "default.jpg"
-      ];
-  
-      let insertedId;
-  
-      db.query(q, [values], (err, data) => {
-        if (err) return res.status(500).json(err);
-        insertedId = data.insertId;
-  
-        const q_2 = "INSERT INTO rekening (`nomor`, `bank`, `namaRek`, `userId`) VALUES (?)";
-  
-        const values_2 = [
-          "Belum diisi",
-          "Belum diisi",
-          "Belum diisi",
-          insertedId
-        ];
-  
-        db.query(q_2, [values_2], (err, data) => {
-          if (err) return res.status(500).json(err);
-          return res.status(200).json({ id: insertedId, message: "User has been created." });
-        });
-      });
+      return res.status(200).json({message: "User mengajukan pendaftaran, menunggu persetujuan admin!" });
     });
-  };
+  });
+};
+
   
 
 export const login = (req, res) =>{
 
     const q = "SELECT * FROM users WHERE email = ?";
 
-    const tokenDuration = (3600000 * 2);
+    const tokenDuration = (3600000 * 6);
     const expirationDate = new Date(Date.now() + tokenDuration);
 
     db.query(q, [req.body.email], (err, data) =>{
         if(err) return res.status(500).json(err);
-        if(data.length === 0) return res.status(404).json("User not found!");
+        if(data.length === 0) return res.status(404).json("Email tidak ditemukan!");
 
         const checkPassword = bcrypt.compareSync(req.body.password, data[0].password)
 
-        if(!checkPassword) return res.status(400).json("Wrong password")
+        if(!checkPassword) return res.status(400).json("Password salah!")
 
         const token = jwt.sign({id:data[0].id}, "secretkey")
 

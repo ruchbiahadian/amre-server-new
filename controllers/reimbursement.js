@@ -86,8 +86,9 @@ export const addReim = (req, res) =>{
 
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
+            
 
-            const q = "INSERT INTO reimbursements (`status`, `createdAt`, `kategori`, `nominal`, `jenis`, `invoicePic`, `userId`) VALUES (?)";
+            const q = "INSERT INTO reimbursements (`status`, `createdAt`, `kategori`, `nominal`, `jenis`, `invoicePic`, `userId`, `acaraId`) VALUES (?)";
 
             const values = [
                 req.body.status,
@@ -96,7 +97,8 @@ export const addReim = (req, res) =>{
                 req.body.nominal,
                 req.body.jenis,
                 req.body.invoicePic,
-                userInfo.id
+                userInfo.id,
+                req.body.acaraId
             ];
 
             db.query(q, [values], (err, data) =>{
@@ -106,6 +108,33 @@ export const addReim = (req, res) =>{
         });
     });
 };
+
+export const checkReim = (req, res) =>{
+    const token = req.cookies.accessToken;
+    if(!token) return res.status(401).json("Not logged in!")
+
+        jwt.verify(token, "secretkey", (err, userInfo)=>{
+            if(err) return res.status(403).json("Token is not valid!")
+
+            const q = `SELECT (SELECT plafon FROM acara WHERE id = ? ) 
+            AS plafon_value, SUM(CASE WHEN acaraId = ? THEN nominal ELSE 0 END) 
+            AS total_nominal FROM reimbursements rm WHERE rm.userId = ?;`;
+
+            db.query(q, 
+                [
+                    req.params.acaraId,
+                    req.params.acaraId,
+                    userInfo.id,
+                ], 
+            (err, data) =>{
+                if (err) return res.status(500).json(err);
+                return res.status(200).json(data);
+        
+        });
+    });
+};
+
+
 
 export const updateReim = (req, res)=>{
     const token = req.cookies.accessToken;
