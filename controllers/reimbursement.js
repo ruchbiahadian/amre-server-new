@@ -118,7 +118,7 @@ export const checkReim = (req, res) =>{
 
             const q = `SELECT (SELECT plafon FROM acara WHERE id = ? ) 
             AS plafon_value, SUM(CASE WHEN acaraId = ? THEN nominal ELSE 0 END) 
-            AS total_nominal FROM reimbursements rm WHERE rm.userId = ?;`;
+            AS total_nominal FROM reimbursements rm WHERE rm.userId = ? AND status="Diajukan" OR status="Disetujui";`;
 
             db.query(q, 
                 [

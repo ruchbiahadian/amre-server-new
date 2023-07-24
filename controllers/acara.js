@@ -19,32 +19,109 @@ export const getAcara = (req, res) =>{
     });
 };
 
- export const updateAcara = (req, res)=>{
-    const token = req.cookies.accessToken;
-    if(!token) return res.status(401).json("Not logged in!")
+//  export const updateAcara = (req, res)=>{
+//     const token = req.cookies.accessToken;
+//     if(!token) return res.status(401).json("Not logged in!")
 
-        jwt.verify(token, "secretkey", (err, userInfo)=>{
-            if(err) return res.status(403).json("Token is not valid!")
+//         jwt.verify(token, "secretkey", (err, userInfo)=>{
+//             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = "UPDATE acara SET `namaAcara` = ?, `reimbursement_status` = ?, `plafon` = ?, `absensi_status` = ?, `maxAbsen` = ?, `createdAt` = ? WHERE id = ?;"
+//             const q = "UPDATE acara SET `namaAcara` = ?, `reimbursement_status` = ?, `plafon` = ?, `absensi_status` = ?, `maxAbsen` = ?, `createdAt` = ? WHERE id = ?;"
 
-            db.query(q, [
-                  req.body.namaAcara,
-                  req.body.reimbursement_status,
-                  req.body.plafon,
-                  req.body.absensi_status,
-                  req.body.maxAbsen,
-                  moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-                  req.body.id,
-            ], (err, data) =>{
-                if(err) res.status(500).json(err)
-                if(data.affectedRows > 0) return res.json("Updated!")
-                return res.status(403).json("You can update only your post!")
-            });
+//             db.query(q, [
+//                   req.body.namaAcara,
+//                   req.body.reimbursement_status,
+//                   req.body.plafon,
+//                   req.body.absensi_status,
+//                   req.body.maxAbsen,
+//                   moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+//                   req.body.id,
+//             ], (err, data) =>{
+//                 if(err) res.status(500).json(err)
+//                 if(data.affectedRows > 0) return res.json("Updated!")
+//                 return res.status(403).json("You can update only your post!")
+//             });
             
 
-        })
- }
+//         })
+//  }
+
+export const updateAcara = (req, res) => {
+    const token = req.cookies.accessToken;
+    if (!token) return res.status(401).json("Not logged in!");
+  
+    jwt.verify(token, "secretkey", (err, userInfo) => {
+      if (err) return res.status(403).json("Token is not valid!");
+  
+      const updateQuery =
+        "UPDATE acara SET `namaAcara` = ?, `reimbursement_status` = ?, `plafon` = ?, `absensi_status` = ?, `maxAbsen` = ?, `createdAt` = ? WHERE id = ?";
+      const { namaAcara, reimbursement_status, plafon, absensi_status, maxAbsen, id } = req.body;
+      console.log(userInfo.id, plafon, userInfo.id, id)
+  
+      db.beginTransaction((err) => {
+        if (err) return res.status(500).json(err);
+  
+        db.query(
+          updateQuery,
+          [
+            namaAcara,
+            reimbursement_status,
+            plafon,
+            absensi_status,
+            maxAbsen,
+            moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+            id,
+          ],
+          (err, data) => {
+            if (err) {
+                console.error("step 0:", err);
+              db.rollback(() => res.status(500).json(err));
+            } else {
+              const tempTableQuery = `  CREATE TEMPORARY TABLE temp_total_sum AS
+                                        SELECT acaraId, userId, SUM(nominal) AS current_sum
+                                        FROM reimbursements
+                                        WHERE acaraId = ? AND (status = "Disetujui" OR status = "Diajukan")
+                                        GROUP BY acaraId, userId;`;
+  
+              db.query(tempTableQuery, id, (err) => {
+                if (err) {
+                    console.error("step 1:", err);
+                  db.rollback(() => res.status(500).json(err));
+                } else {
+                  const updateReimbursementQuery = `UPDATE reimbursements rm
+                                JOIN temp_total_sum t ON rm.acaraId = t.acaraId AND rm.userId = t.userId
+                                SET rm.nominal = rm.nominal * ? / t.current_sum
+                                WHERE rm.acaraId = ? AND (rm.status = "Disetujui" OR rm.status = "Diajukan");`;
+  
+                  db.query(updateReimbursementQuery, [plafon, id], (err) => {
+                    if (err) {
+                        console.error("step 2:", err);
+                      db.rollback(() => res.status(500).json(err));
+                    } else {
+                      const dropTempTableQuery = "DROP TEMPORARY TABLE temp_total_sum;";
+                      db.query(dropTempTableQuery, (err) => {
+                        if (err) {
+                            console.error("step 3", err);
+                          db.rollback(() => res.status(500).json(err));
+                        } else {
+                          db.commit((err) => {
+                            if (err) return res.status(500).json(err);
+                            return res.json("Updated!");
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          }
+        );
+      });
+    });
+  };
+
+
 
  export const acaraHapus = (req, res)=>{
     const token = req.cookies.accessToken;

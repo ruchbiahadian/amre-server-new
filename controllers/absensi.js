@@ -9,7 +9,7 @@ export const getPengajuan = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.univ, users.jenis, users.tahun
+            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun
             FROM absensi JOIN users ON absensi.userId = users.id
             WHERE absensi.status = "Diajukan"
             ORDER BY absensi.createdAt DESC;`;
@@ -81,7 +81,7 @@ export const absensiTerima = (req, res)=>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.univ, users.jenis, users.tahun
+            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun
             FROM absensi JOIN users ON absensi.userId = users.id
             WHERE absensi.status = "Disetujui"
             ORDER BY absensi.createdAt DESC;`;
@@ -101,7 +101,7 @@ export const getDitolak = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.univ, users.jenis, users.tahun
+            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun
             FROM absensi JOIN users ON absensi.userId = users.id
             WHERE absensi.status = "Ditolak"
             ORDER BY absensi.createdAt DESC;`;

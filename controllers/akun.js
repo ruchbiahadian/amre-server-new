@@ -42,7 +42,7 @@ export const hapusPendaftar = (req, res)=>{
 
  export const terimaPendaftar = (req, res) => {
 
-      const q = "INSERT INTO users (`email`, `nama`, `noTelp`, `univ`,  `jenis`, `tahun`, `domisili`, `password`, `profilePic`, `role`) VALUES (?)";
+      const q = "INSERT INTO users (`email`, `nama`, `noTelp`, `instansi`,  `jenis`, `tahun`, `domisili`, `password`, `profilePic`, `role`) VALUES (?)";
   
       const values = [
         req.body.email,
