@@ -97,7 +97,7 @@ export const updateUserTexts = (req, res) => {
             req.body.email,
             req.body.nama,
             req.body.noTelp,
-            req.body.univ,
+            req.body.instansi,
             req.body.jenis,
             req.body.tahun,
             req.body.domisili,
