@@ -1,5 +1,5 @@
 import express from "express";
-import { getPendaftar, hapusPendaftar, terimaPendaftar, getDaftarAkun, hapusDaftarAkun } from "../controllers/akun.js";
+import { getPendaftar, hapusPendaftar, terimaPendaftar, getDaftarAkun, hapusDaftarAkun, resetPassword } from "../controllers/akun.js";
 
 const router = express.Router()
 
@@ -9,7 +9,7 @@ router.delete("/hapusPendaftar/:id", hapusPendaftar)
 router.delete("/hapusDaftarAkun/:id", hapusDaftarAkun)
 router.post("/terimaPendaftar", terimaPendaftar)
 router.get("/getDaftarAkun", getDaftarAkun)
-// router.put("/absensiTolak", absensiTolak)
+router.put("/resetPassword", resetPassword)
 // router.get("/getDitolak", getDitolak)
 
 

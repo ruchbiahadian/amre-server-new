@@ -1,17 +1,24 @@
 import {db} from "../connect.js";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const getUser = (req, res)=>{
-   const userId = req.params.userId;
-   const q = "SELECT * FROM users JOIN rekening ON users.id = rekening.userId WHERE users.id = ?" 
+    const token = req.cookies.accessToken;
+    if(!token) return res.status(401).json("Not logged in!")
 
-//    const q = "SELECT * FROM users JOIN rekening ON users.id = rekening.userId WHERE users.id = ?" 
+    jwt.verify(token, "secretkey", (err, userInfo)=>{
+        if(err) return res.status(403).json("Token is not valid!")
 
-   db.query(q, [userId], (err,data)=>{
-    if (err) return res.status(500).json(err)
-    const {password, ...info} = data[0];
-    return res.json(info)   
-   })
+        const userId = userInfo.id;
+        const q = "SELECT * FROM users JOIN rekening ON users.id = rekening.userId WHERE users.id = ?" 
+     
+        db.query(q, [userId], (err,data)=>{
+         if (err) return res.status(500).json(err)
+         const {password, ...info} = data[0];
+         return res.json(info)   
+        })
+
+    })
 }
 
 export const updateUserProfile = (req, res)=>{
@@ -35,6 +42,44 @@ export const updateUserProfile = (req, res)=>{
 
         })
  }
+
+
+ 
+ export const updateUserPswd = (req, res) => {
+     const token = req.cookies.accessToken;
+     if (!token) return res.status(401).json("Not logged in!");
+ 
+     jwt.verify(token, "secretkey", (err, userInfo) => {
+         if (err) return res.status(403).json("Token is not valid!");
+ 
+         const q = "SELECT password FROM users WHERE id = ?";
+         const q_2 = "UPDATE users SET `password`=? WHERE id = ?";
+ 
+         db.query(q, [req.body.id], (err, data) => {
+             if (err) return res.status(500).json(err);
+             if (data.length === 0) {
+                 return res.status(403).json("User not found!");
+             }
+ 
+             const checkPassword = bcrypt.compareSync(req.body.passwordLama, data[0].password);
+             if (!checkPassword) return res.status(400).json("Password salah!");
+ 
+             const salt = bcrypt.genSaltSync(10);
+             const hashedPassword = bcrypt.hashSync(req.body.passwordBaru, salt);
+ 
+             db.query(q_2, [hashedPassword, req.body.id], (err, data) => {
+                 if (err) return res.status(500).json(err);
+                 if (data.affectedRows > 0) {
+                     return res.status(200).json("Password berhasil diubah!");
+                 } else {
+                     return res.status(500).json("Failed to update password!");
+                 }
+             });
+         });
+     });
+ };
+ 
+
 
 
 
@@ -79,5 +124,3 @@ export const updateUserTexts = (req, res) => {
         });
     });
 };
-
-

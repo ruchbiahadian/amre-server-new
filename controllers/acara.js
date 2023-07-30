@@ -19,33 +19,6 @@ export const getAcara = (req, res) =>{
     });
 };
 
-//  export const updateAcara = (req, res)=>{
-//     const token = req.cookies.accessToken;
-//     if(!token) return res.status(401).json("Not logged in!")
-
-//         jwt.verify(token, "secretkey", (err, userInfo)=>{
-//             if(err) return res.status(403).json("Token is not valid!")
-
-//             const q = "UPDATE acara SET `namaAcara` = ?, `reimbursement_status` = ?, `plafon` = ?, `absensi_status` = ?, `maxAbsen` = ?, `createdAt` = ? WHERE id = ?;"
-
-//             db.query(q, [
-//                   req.body.namaAcara,
-//                   req.body.reimbursement_status,
-//                   req.body.plafon,
-//                   req.body.absensi_status,
-//                   req.body.maxAbsen,
-//                   moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-//                   req.body.id,
-//             ], (err, data) =>{
-//                 if(err) res.status(500).json(err)
-//                 if(data.affectedRows > 0) return res.json("Updated!")
-//                 return res.status(403).json("You can update only your post!")
-//             });
-            
-
-//         })
-//  }
-
 export const updateAcara = (req, res) => {
     const token = req.cookies.accessToken;
     if (!token) return res.status(401).json("Not logged in!");
@@ -56,7 +29,6 @@ export const updateAcara = (req, res) => {
       const updateQuery =
         "UPDATE acara SET `namaAcara` = ?, `reimbursement_status` = ?, `plafon` = ?, `absensi_status` = ?, `maxAbsen` = ?, `createdAt` = ? WHERE id = ?";
       const { namaAcara, reimbursement_status, plafon, absensi_status, maxAbsen, id } = req.body;
-      console.log(userInfo.id, plafon, userInfo.id, id)
   
       db.beginTransaction((err) => {
         if (err) return res.status(500).json(err);

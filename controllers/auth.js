@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const register = (req, res) => {
-  const q = "SELECT email FROM (SELECT email FROM waiting_register WHERE email = ? UNION SELECT email FROM users WHERE email = ?) AS mix;";
+  const q = "SELECT email FROM (SELECT email FROM pendaftaran WHERE email = ? UNION SELECT email FROM users WHERE email = ?) AS mix;";
 
   db.query(q, [req.body.email, req.body.email], (err, data) => {
     if (err) return res.status(500).json(err);
@@ -13,7 +13,7 @@ export const register = (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(req.body.password, salt);
 
-    const q = "INSERT INTO waiting_register (`email`, `nama`, `jenisMagang`, `tahunMagang`,  `password`) VALUES (?)";
+    const q = "INSERT INTO pendaftaran (`email`, `nama`, `jenisMagang`, `tahunMagang`,  `password`) VALUES (?)";
 
     const values = [
       req.body.email,

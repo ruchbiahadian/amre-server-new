@@ -1,6 +1,6 @@
-import moment from "moment/moment.js";
 import {db} from "../connect.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 export const getPendaftar = (req, res) =>{
     const token = req.cookies.accessToken;
@@ -9,7 +9,7 @@ export const getPendaftar = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT * FROM waiting_register;`;
+            const q = `SELECT * FROM pendaftaran;`;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -27,7 +27,7 @@ export const hapusPendaftar = (req, res)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
          
-            const q = "DELETE FROM waiting_register WHERE id = ?"
+            const q = "DELETE FROM pendaftaran WHERE id = ?"
 
             db.query(q, req.params.id,
                  (err, data) => {
@@ -39,6 +39,28 @@ export const hapusPendaftar = (req, res)=>{
 
         })
  }
+
+ export const resetPassword = (req, res)=>{
+  const token = req.cookies.accessToken;
+  if(!token) return res.status(401).json("Not logged in!")
+
+      jwt.verify(token, "secretkey", (err, userInfo)=>{
+          if(err) return res.status(403).json("Token is not valid!")
+
+          const q = "UPDATE users SET `password`=?  WHERE id = ?"
+
+          const salt = bcrypt.genSaltSync(10);
+          const hashedPassword = bcrypt.hashSync(req.body.email, salt);
+
+          db.query(q, [hashedPassword, req.body.id], (err, data) => {
+            if (err) return res.status(500).json(err);
+            if (data.affectedRows > 0) return res.json("Updated!");
+            return res.status(403).json("You can update only your post!");
+          });          
+
+      })
+}
+
 
  export const terimaPendaftar = (req, res) => {
 
@@ -86,7 +108,7 @@ export const getDaftarAkun = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT id, email, nama, jenis, tahun FROM users;`;
+            const q = `SELECT id, email, nama, jenis, tahun FROM users WHERE users.role = 3;`;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);

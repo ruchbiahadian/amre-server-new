@@ -9,7 +9,7 @@ export const getPosts = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT news.*,  users.nama, users.profilePic FROM news JOIN users ON news.userId= users.id ORDER BY news.createdAt DESC;`;
+            const q = `SELECT berita.*,  users.nama, users.profilePic FROM berita JOIN users ON berita.userId= users.id ORDER BY berita.createdAt DESC;`;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -26,7 +26,7 @@ export const addPosts = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = "INSERT INTO news (`desc`, `img`, `createdAt`, `userId`) VALUES (?)";
+            const q = "INSERT INTO berita (`desc`, `img`, `createdAt`, `userId`) VALUES (?)";
 
             const values = [
                 req.body.desc,
@@ -50,7 +50,7 @@ export const deletePost = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = "DELETE FROM news WHERE `id`=? AND `userId` = ?";
+            const q = "DELETE FROM berita WHERE `id`=? AND `userId` = ?";
 
             db.query(q, [req.params.id, userInfo.id], (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -69,10 +69,10 @@ export const updatePost = (req, res)=>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = "UPDATE news SET `desc`=?, `img`=?, `createdAt`=? WHERE id = ?"
+            const q = "UPDATE berita SET `desc`=?, `img`=?, `createdAt`=? WHERE id = ?"
 
             db.query(q, [
-                req.body.desc,
+                req.body.text,
                 req.body.img,
                 moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
                 req.body.id

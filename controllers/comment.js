@@ -5,7 +5,7 @@ import moment from "moment";
 export const getComments = (req, res) =>{
     const token = req.cookies.accessToken;
     
-    const q = `SELECT c.*, u.id AS userId, nama, profilePic FROM comments AS c JOIN users AS u ON (u.id = c.userId)
+    const q = `SELECT c.*, u.id AS userId, nama, profilePic FROM komentar AS c JOIN users AS u ON (u.id = c.userId)
     WHERE c.postId = ? ORDER BY c.createdAt DESC`;
 
     db.query(q, [req.query.postId], (err, data) =>{
@@ -18,7 +18,7 @@ export const getComments = (req, res) =>{
 export const getCommentsReimbursement = (req, res) =>{
     const token = req.cookies.accessToken;
     
-    const q = `SELECT comments.*, u.id AS userId, nama, profilePic FROM comments JOIN users AS u ON (u.id = comments.userId) WHERE comments.reimId = ? ORDER BY comments.createdAt DESC`;
+    const q = `SELECT komentar.*, u.id AS userId, nama, profilePic FROM komentar JOIN users AS u ON (u.id = komentar.userId) WHERE komentar.reimId = ? ORDER BY komentar.createdAt DESC`;
 
     db.query(q, [req.query.postId], (err, data) =>{
         if (err) return res.status(500).json(err);
@@ -34,7 +34,7 @@ export const addComments = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = "INSERT INTO comments (`desc`, `createdAt`, `userId`, `postId`) VALUES (?)";
+            const q = "INSERT INTO komentar (`desc`, `createdAt`, `userId`, `postId`) VALUES (?)";
 
             const values = [
                 req.body.desc,
@@ -58,7 +58,7 @@ export const addCommentsReimbursement = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = "INSERT INTO comments (`desc`, `createdAt`, `userId`, `reimId`) VALUES (?)";
+            const q = "INSERT INTO komentar (`desc`, `createdAt`, `userId`, `reimId`) VALUES (?)";
 
             const values = [
                 req.body.desc,
