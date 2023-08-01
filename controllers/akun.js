@@ -19,6 +19,23 @@ export const getPendaftar = (req, res) =>{
     });
 };
 
+export const getAdmin = (req, res) =>{
+  const token = req.cookies.accessToken;
+  if(!token) return res.status(401).json("Not logged in!")
+
+      jwt.verify(token, "secretkey", (err, userInfo)=>{
+          if(err) return res.status(403).json("Token is not valid!")
+
+          const q = `SELECT * FROM pendaftaran;`;
+
+          db.query(q, (err, data) =>{
+              if (err) return res.status(500).json(err);
+              return res.status(200).json(data);
+      
+      });
+  });
+};
+
 export const hapusPendaftar = (req, res)=>{
     const token = req.cookies.accessToken;
     if(!token) return res.status(401).json("Not logged in!")
@@ -138,3 +155,52 @@ export const hapusDaftarAkun = (req, res)=>{
 
       })
 }
+
+export const addAdmin = (req, res) => {
+  const q = "SELECT email FROM (SELECT email FROM pendaftaran WHERE email = ? UNION SELECT email FROM users WHERE email = ?) AS mix;";
+
+  db.query(q, [req.body.email, req.body.email], (err, data) => {
+    if (err) return res.status(500).json(err);
+    if (data.length) return res.status(409).json({message: "Email sudah terdaftar dalam data daftar admin atau data pendaftaran user"});
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+
+    const q = "INSERT INTO users (`email`, `nama`, `noTelp`, `instansi`, `jenis`, `tahun`, `domisili`,`password`, `profilePic`, `role`) VALUES (?)";
+
+    const values = [
+      req.body.email,
+      req.body.nama,
+      "belum diisi",
+      "belum diisi",
+      "belum diisi",
+      0,
+      "belum diisi",
+      hashedPassword,
+      "default.jpg",
+      2
+    ];
+
+    db.query(q, [values], (err, data) => {
+      if (err) return res.status(500).json(err);
+      return res.status(200).json({message: "Admin berhasil ditambahkan" });
+    });
+  });
+};
+
+export const getDaftarAdmin = (req, res) =>{
+  const token = req.cookies.accessToken;
+  if(!token) return res.status(401).json("Not logged in!")
+
+      jwt.verify(token, "secretkey", (err, userInfo)=>{
+          if(err) return res.status(403).json("Token is not valid!")
+
+          const q = `SELECT id, email, nama FROM users WHERE users.role = 2;`;
+
+          db.query(q, (err, data) =>{
+              if (err) return res.status(500).json(err);
+              return res.status(200).json(data);
+      
+      });
+  });
+};

@@ -7,7 +7,6 @@ export const register = (req, res) => {
 
   db.query(q, [req.body.email, req.body.email], (err, data) => {
     if (err) return res.status(500).json(err);
-    console.log(data)
     if (data.length) return res.status(409).json("Email sudah terdaftar atau anda dalam proses menunggu persetujuan admin");
 
     const salt = bcrypt.genSaltSync(10);
@@ -49,12 +48,14 @@ export const login = (req, res) =>{
 
         const token = jwt.sign({id:data[0].id}, "secretkey")
 
-        const {password, ...others} = data[0];
+        // const {password, ...others} = data[0];
+        const userWithoutPassword = { ...data[0] };
+        delete userWithoutPassword.password;
 
         res.cookie("accessToken", token, {
             httpOnly: true,
             expires: expirationDate,
-          }).status(200).json(others);
+          }).status(200).json(userWithoutPassword);
     });
 };
 

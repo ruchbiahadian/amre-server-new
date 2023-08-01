@@ -142,7 +142,7 @@ export const getAbsen = (req, res) =>{
 
             const userId = req.params.userId;
 
-            const q = `SELECT * FROM absensi ORDER BY absensi.createdAt DESC;`
+            const q = `SELECT * FROM absensi WHERE userId = ? ORDER BY absensi.createdAt DESC;`
 
             db.query(q, userId, (err, data) =>{
                 if (err) return res.status(500).json(err);

@@ -6,7 +6,7 @@ export const getComments = (req, res) =>{
     const token = req.cookies.accessToken;
     
     const q = `SELECT c.*, u.id AS userId, nama, profilePic FROM komentar AS c JOIN users AS u ON (u.id = c.userId)
-    WHERE c.postId = ? ORDER BY c.createdAt DESC`;
+    WHERE c.postId = ? ORDER BY c.createdAt ASC`;
 
     db.query(q, [req.query.postId], (err, data) =>{
         if (err) return res.status(500).json(err);

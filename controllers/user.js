@@ -9,13 +9,37 @@ export const getUser = (req, res)=>{
     jwt.verify(token, "secretkey", (err, userInfo)=>{
         if(err) return res.status(403).json("Token is not valid!")
 
-        const userId = userInfo.id;
+        const userId = req.params.userId;
         const q = "SELECT * FROM users JOIN rekening ON users.id = rekening.userId WHERE users.id = ?" 
      
         db.query(q, [userId], (err,data)=>{
          if (err) return res.status(500).json(err)
-         const {password, ...info} = data[0];
-         return res.json(info)   
+        //  const {password, ...info} = data[0];
+        const userWithoutPassword = { ...data[0] };
+         delete userWithoutPassword.password;
+         return res.json(userWithoutPassword)   
+        })
+
+    })
+}
+
+
+export const getAdmin = (req, res)=>{
+    const token = req.cookies.accessToken;
+    if(!token) return res.status(401).json("Not logged in!")
+
+    jwt.verify(token, "secretkey", (err, userInfo)=>{
+        if(err) return res.status(403).json("Token is not valid!")
+
+        const userId = req.params.userId;
+        const q = "SELECT * FROM users WHERE users.id = ?" 
+     
+        db.query(q, [userId], (err,data)=>{
+         if (err) return res.status(500).json(err)
+        //  const {password, ...info} = data[0];
+        const userWithoutPassword = { ...data[0] };
+         delete userWithoutPassword.password;
+         return res.json(userWithoutPassword)   
         })
 
     })
@@ -104,7 +128,7 @@ export const updateUserTexts = (req, res) => {
             userInfo.id
         ], (err, data) => {
             if (err) return res.status(500).json(err);
-            if (data.affectedRows > 0) {
+            if (data.affectedRows > 0 && req.body.role === 3) {
                 db.query(q_2, [
                     req.body.nomor,
                     req.body.bank,
@@ -119,7 +143,11 @@ export const updateUserTexts = (req, res) => {
                     }
                 });
             } else {
-                return res.status(403).json("You can update only your post!");
+                if(req.body.role !== 3){
+                    return res.status(200).json("updated");
+                }else{
+                    return res.status(403).json("You can update only your post!");
+                }
             }
         });
     });
