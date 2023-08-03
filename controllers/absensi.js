@@ -9,8 +9,10 @@ export const getPengajuan = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun
-            FROM absensi JOIN users ON absensi.userId = users.id
+            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun, acara.namaAcara
+            FROM absensi 
+            JOIN users ON absensi.userId = users.id
+            JOIN acara ON absensi.acaraId = acara.id
             WHERE absensi.status = "Diajukan"
             ORDER BY absensi.createdAt DESC;`;
 
@@ -81,10 +83,12 @@ export const absensiTerima = (req, res)=>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun
-            FROM absensi JOIN users ON absensi.userId = users.id
-            WHERE absensi.status = "Disetujui"
-            ORDER BY absensi.createdAt DESC;`;
+            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun, acara.namaAcara
+                        FROM absensi 
+                        JOIN users ON absensi.userId = users.id
+                        JOIN acara ON absensi.acaraId = acara.id
+                        WHERE absensi.status = "Disetujui"
+                        ORDER BY absensi.createdAt DESC;`;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -101,8 +105,10 @@ export const getDitolak = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun
-            FROM absensi JOIN users ON absensi.userId = users.id
+            const q = `SELECT absensi.*, users.email, users.nama, users.noTelp, users.instansi, users.jenis, users.tahun, acara.namaAcara
+            FROM absensi 
+            JOIN users ON absensi.userId = users.id
+            JOIN acara ON absensi.acaraId = acara.id
             WHERE absensi.status = "Ditolak"
             ORDER BY absensi.createdAt DESC;`;
 
@@ -142,7 +148,11 @@ export const getAbsen = (req, res) =>{
 
             const userId = req.params.userId;
 
-            const q = `SELECT * FROM absensi WHERE userId = ? ORDER BY absensi.createdAt DESC;`
+            const q =  `SELECT absensi.*, acara.namaAcara 
+                        FROM absensi
+                        JOIN acara ON absensi.acaraId = acara.id
+                        WHERE userId = ?
+                        ORDER BY absensi.createdAt DESC;`
 
             db.query(q, userId, (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -159,13 +169,12 @@ export const addAbsen = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = "INSERT INTO absensi (`createdAt`, `absencePic`,  `status`, `kategori`, `userId`, `acaraId`) VALUES (?)";
+            const q = "INSERT INTO absensi (`createdAt`, `absencePic`,  `status`, `userId`, `acaraId`) VALUES (?)";
 
             const values = [
                 moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
                 req.body.absencePic,
                 req.body.status,
-                req.body.kategori,
                 userInfo.id,
                 req.body.acaraId
             ];
@@ -186,7 +195,7 @@ export const updateAbsen = (req, res)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
          
-            const q = "UPDATE absensi SET `createdAt`=?, `absencePic`=?, `status`=?, `kategori`=? WHERE id = ?"
+            const q = "UPDATE absensi SET `createdAt`=?, `absencePic`=?, `status`=? WHERE id = ?"
 
             db.query(
                 q,
@@ -194,7 +203,6 @@ export const updateAbsen = (req, res)=>{
                   moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
                   req.body.absencePic,
                   req.body.status,
-                  req.body.kategori,
                   req.body.id,
                 ],
                 (err, data) => {

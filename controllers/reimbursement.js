@@ -11,7 +11,8 @@ export const getReim = (req, res) =>{
 
             const userId = req.params.userId;
 
-            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek FROM reimbursements 
+            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, acara.namaAcara FROM reimbursements
+			JOIN acara ON reimbursements.acaraId = acara.id 
             JOIN rekening ON reimbursements.userId = rekening.userId 
             WHERE reimbursements.userId = ? ORDER BY reimbursements.createdAt DESC;`;
 
@@ -30,9 +31,13 @@ export const getPengajuan = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, users.nama, users.email, users.jenis, users.tahun FROM reimbursements 
-            JOIN rekening ON reimbursements.userId = rekening.userId JOIN users ON reimbursements.userId = users.id
-            WHERE reimbursements.status = "Diajukan" ORDER BY reimbursements.createdAt DESC `;
+            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, users.nama, users.email, users.jenis, users.tahun, acara.namaAcara 
+            FROM reimbursements 
+            JOIN rekening ON reimbursements.userId = rekening.userId 
+            JOIN users ON reimbursements.userId = users.id
+            JOIN acara ON reimbursements.acaraId = acara.id
+            WHERE reimbursements.status = "Diajukan" 
+            ORDER BY reimbursements.createdAt DESC `;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -49,9 +54,13 @@ export const getDisetujui = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, users.nama, users.email, users.jenis, users.tahun FROM reimbursements 
-            JOIN rekening ON reimbursements.userId = rekening.userId JOIN users ON reimbursements.userId = users.id
-            WHERE reimbursements.status = "Disetujui" ORDER BY reimbursements.createdAt DESC `;
+            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, users.nama, users.email, users.jenis, users.tahun, acara.namaAcara 
+            FROM reimbursements 
+            JOIN rekening ON reimbursements.userId = rekening.userId 
+            JOIN users ON reimbursements.userId = users.id
+            JOIN acara ON reimbursements.acaraId = acara.id
+            WHERE reimbursements.status = "Disetujui" 
+            ORDER BY reimbursements.createdAt DESC `;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -68,9 +77,13 @@ export const getDitolak = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, users.nama, users.email, users.jenis, users.tahun FROM reimbursements 
-            JOIN rekening ON reimbursements.userId = rekening.userId JOIN users ON reimbursements.userId = users.id
-            WHERE reimbursements.status = "Ditolak"  ORDER BY reimbursements.createdAt DESC`;
+            const q = `SELECT reimbursements.* , rekening.nomor, rekening.bank, rekening.namaRek, users.nama, users.email, users.jenis, users.tahun, acara.namaAcara 
+            FROM reimbursements 
+            JOIN rekening ON reimbursements.userId = rekening.userId 
+            JOIN users ON reimbursements.userId = users.id
+            JOIN acara ON reimbursements.acaraId = acara.id
+            WHERE reimbursements.status = "Ditolak" 
+            ORDER BY reimbursements.createdAt DESC `;
 
             db.query(q, (err, data) =>{
                 if (err) return res.status(500).json(err);
@@ -88,12 +101,11 @@ export const addReim = (req, res) =>{
             if(err) return res.status(403).json("Token is not valid!")
             
 
-            const q = "INSERT INTO reimbursements (`status`, `createdAt`, `kategori`, `nominal`, `jenis`, `invoicePic`, `userId`, `acaraId`) VALUES (?)";
+            const q = "INSERT INTO reimbursements (`status`, `createdAt`, `nominal`, `jenis`, `invoicePic`, `userId`, `acaraId`) VALUES (?)";
 
             const values = [
                 req.body.status,
                 moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-                req.body.kategori,
                 req.body.nominal,
                 req.body.jenis,
                 req.body.invoicePic,
@@ -144,14 +156,13 @@ export const updateReim = (req, res)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
          
-            const q = "UPDATE reimbursements SET `status`=?, `createdAt`=?, `kategori`=?, `nominal`=?, `jenis`=?, `invoicePic`=?  WHERE id = ?"
+            const q = "UPDATE reimbursements SET `status`=?, `createdAt`=?, `nominal`=?, `jenis`=?, `invoicePic`=?  WHERE id = ?"
 
             db.query(
                 q,
                 [
                   req.body.status,
                   moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-                  req.body.kategori,
                   req.body.nominal,
                   req.body.jenis,
                   req.body.invoicePic,

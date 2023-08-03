@@ -10,18 +10,19 @@ export const getLaporan = (req, res) =>{
             if(err) return res.status(403).json("Token is not valid!")
             
             const q = `SELECT
-            rm.status AS rm_status,
-            rm.kategori,
-            SUM(rm.nominal) AS total_nominal,
-            u.nama,
-            r.nomor,
-            r.bank,
-            rm.acaraId   
-          FROM reimbursements rm
-          JOIN users u ON rm.userId = u.id
-          JOIN rekening r ON rm.userId = r.userId
-          WHERE rm.status = "Disetujui" AND rm.acaraId = ?
-          GROUP BY rm.userId, rm.acaraId, rm.status, rm.kategori, u.nama, r.nomor, r.bank, rm.acaraId;          
+                            rm.status AS rm_status,
+                            SUM(rm.nominal) AS total_nominal,
+                            u.nama,
+                            r.nomor,
+                            r.bank,
+                            rm.acaraId,
+                            a.namaAcara
+                        FROM reimbursements rm
+                        JOIN users u ON rm.userId = u.id
+                        JOIN rekening r ON rm.userId = r.userId
+                        JOIN acara a ON rm.acaraId = a.id
+                        WHERE rm.status = "Disetujui" AND rm.acaraId = ?
+                        GROUP BY rm.userId, rm.acaraId, rm.status, u.nama, r.nomor, r.bank, rm.acaraId          
           `;
 
             db.query(q, req.params.acaraId, (err, data) =>{
