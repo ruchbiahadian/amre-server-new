@@ -12,9 +12,6 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.5.0"
   },
-  "scripts": {
-    "start": "nodemon index.js"
-  },
   "author": "",
   "license": "ISC",
   "description": "",
