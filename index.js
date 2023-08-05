@@ -32,6 +32,8 @@ app.use(cors({
 );
 app.use(cookieParser());
 
+const port = process.env.PORT || 3000;
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, req.uploadPath)
@@ -117,6 +119,6 @@ app.use("/api/laporan", laporanRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/invoice", invoiceRoutes);
 
-app.listen(8800, () =>{
+app.listen(port, () =>{
     console.log("API is working!")
 });
