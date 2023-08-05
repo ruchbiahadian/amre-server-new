@@ -13,6 +13,7 @@ import absensiRoutes from "./routes/absensis.js"
 import akunRoutes from "./routes/akuns.js"
 import laporanRoutes from "./routes/laporans.js"
 import dashboardRoutes from "./routes/dashboards.js"
+import invoiceRoutes from "./routes/invoices.js"
 import multer from "multer";
 
 const app = express()
@@ -113,6 +114,7 @@ app.use("/api/absensi", absensiRoutes);
 app.use("/api/akun", akunRoutes);
 app.use("/api/laporan", laporanRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/invoice", invoiceRoutes);
 
 app.listen(8800, () =>{
     console.log("API is working!")

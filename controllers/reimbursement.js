@@ -128,12 +128,15 @@ export const checkReim = (req, res) =>{
         jwt.verify(token, "secretkey", (err, userInfo)=>{
             if(err) return res.status(403).json("Token is not valid!")
 
-            const q = `SELECT (SELECT plafon FROM acara WHERE id = ? ) 
-            AS plafon_value, COALESCE(SUM(CASE WHEN acaraId = ? THEN nominal ELSE 0 END), 0) 
-            AS total_nominal FROM reimbursements rm WHERE rm.userId = ? AND status="Diajukan" OR status="Disetujui";`;
+            const q = `SELECT
+                        (SELECT plafon FROM acara WHERE id = ?) AS plafon_value,
+                        COALESCE(SUM(CASE WHEN acaraId = ? THEN nominal ELSE 0 END), 0) AS total_nominal
+                        FROM reimbursements rm
+                        WHERE rm.acaraId = ? AND rm.userId = ? AND (rm.status = "Diajukan" OR rm.status = "Disetujui")`;
 
             db.query(q, 
                 [
+                    req.params.acaraId,
                     req.params.acaraId,
                     req.params.acaraId,
                     userInfo.id,
