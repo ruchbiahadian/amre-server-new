@@ -94,6 +94,7 @@ app.post("/api/uploadAbsence", (req, res) => {
     }
 
     const file = req.file;
+    console.log('Uploaded file name absence:', file.filename); // Add this line
     res.status(200).json(file.filename);
   });
 });
@@ -110,6 +111,7 @@ app.post("/api/upload", (req, res) => {
     }
 
     const file = req.file;
+    console.log('Uploaded file name mews:', file.filename); // Add this line
     res.status(200).json(file.filename);
   });
 });
