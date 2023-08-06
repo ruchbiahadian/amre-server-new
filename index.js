@@ -15,7 +15,7 @@ import laporanRoutes from "./routes/laporans.js"
 import dashboardRoutes from "./routes/dashboards.js"
 import invoiceRoutes from "./routes/invoices.js"
 import multer from "multer";
-import path from ('path');
+import path from "path";
 
 const app = express()
 
@@ -120,7 +120,7 @@ app.use("/api/laporan", laporanRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/invoice", invoiceRoutes);
 
-app.use('/profile', express.static(uploadPath));
+app.use('/api/profilefile', express.static(uploadPath));
 
 app.listen(port, () =>{
     console.log("API is working!")
