@@ -15,6 +15,7 @@ import laporanRoutes from "./routes/laporans.js"
 import dashboardRoutes from "./routes/dashboards.js"
 import invoiceRoutes from "./routes/invoices.js"
 import multer from "multer";
+import path from ('path');
 
 const app = express()
 
@@ -46,7 +47,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 app.post("/api/uploadProfile", (req, res) => {
-  const uploadPath = '../client/public/profile';
+  const uploadPath = path.join(__dirname, '../client/public/profile');
   
   req.uploadPath = uploadPath;
   
@@ -118,6 +119,8 @@ app.use("/api/akun", akunRoutes);
 app.use("/api/laporan", laporanRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/invoice", invoiceRoutes);
+
+app.use('/profile', express.static(uploadPath));
 
 app.listen(port, () =>{
     console.log("API is working!")
