@@ -47,12 +47,12 @@ const storage = multer.diskStorage({
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const upload = multer({ storage: storage })
-const uploadPath = path.join(__dirname, '/client/public/profile');
+
+const uploadPathProfile = path.join(__dirname, '/client/public/profile');
 
 app.post("/api/uploadProfile", (req, res) => {
-
   
-  req.uploadPath = uploadPath;
+  req.uploadPath = uploadPathProfile;
   
   upload.single("file")(req, res, function (err) {
     if (err) {
@@ -63,11 +63,12 @@ app.post("/api/uploadProfile", (req, res) => {
     res.status(200).json(file.filename);
   });
 });
+
+const uploadPathInvoice = path.join(__dirname, '/client/public/invoice');
 
 app.post("/api/uploadInvoice", (req, res) => {
-  const uploadPath = '../client/public/invoice';
-  
-  req.uploadPath = uploadPath;
+
+  req.uploadPath = uploadPathInvoice;
   
   upload.single("file")(req, res, function (err) {
     if (err) {
@@ -78,11 +79,12 @@ app.post("/api/uploadInvoice", (req, res) => {
     res.status(200).json(file.filename);
   });
 });
+
+const uploadPathAbsence = path.join(__dirname, '/client/public/absence');
 
 app.post("/api/uploadAbsence", (req, res) => {
-  const uploadPath = '../client/public/absence';
   
-  req.uploadPath = uploadPath;
+  req.uploadPath = uploadPathAbsence;
   
   upload.single("file")(req, res, function (err) {
     if (err) {
@@ -94,10 +96,11 @@ app.post("/api/uploadAbsence", (req, res) => {
   });
 });
 
+const uploadPathNews = path.join(__dirname, '/client/public/news');
+
 app.post("/api/upload", (req, res) => {
-  const uploadPath = '../client/public/news';
   
-  req.uploadPath = uploadPath;
+  req.uploadPath = uploadPathNews;
   
   upload.single("file")(req, res, function (err) {
     if (err) {
@@ -123,7 +126,10 @@ app.use("/api/laporan", laporanRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/invoice", invoiceRoutes);
 
-app.use('/api/profilefile', express.static(uploadPath));
+app.use('/api/profilefile', express.static(uploadPathProfile));
+app.use('/api/invoicefile', express.static(uploadPathInvoice));
+app.use('/api/absencefile', express.static(uploadPathAbsence));
+app.use('/api/newsfile', express.static(uploadPathNews));
 
 app.listen(port, () =>{
     console.log("API is working!")
