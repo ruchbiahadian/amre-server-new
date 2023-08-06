@@ -35,7 +35,6 @@ app.use(cors({
 app.use(cookieParser());
 
 const port = process.env.PORT || 3000;
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -46,8 +45,9 @@ const storage = multer.diskStorage({
   }
 })
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const upload = multer({ storage: storage })
-const uploadPath = path.join(__dirname, '../client/public/profile');
+const uploadPath = path.join(__dirname, '/client/public/profile');
 
 app.post("/api/uploadProfile", (req, res) => {
 
