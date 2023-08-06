@@ -64,7 +64,7 @@ app.post("/api/uploadProfile", (req, res) => {
   });
 });
 
-const uploadPathInvoice = path.join(__dirname, '/client/public/invoice');
+const uploadPathInvoice = path.join(__dirname, 'client/public/invoice');
 
 app.post("/api/uploadInvoice", (req, res) => {
 
@@ -80,7 +80,7 @@ app.post("/api/uploadInvoice", (req, res) => {
   });
 });
 
-const uploadPathAbsence = path.join(__dirname, '/client/public/absence');
+const uploadPathAbsence = path.join(__dirname, 'client/public/absence');
 
 app.post("/api/uploadAbsence", (req, res) => {
   
@@ -96,7 +96,7 @@ app.post("/api/uploadAbsence", (req, res) => {
   });
 });
 
-const uploadPathNews = path.join(__dirname, '/client/public/news');
+const uploadPathNews = path.join(__dirname, 'client/public/news');
 
 app.post("/api/upload", (req, res) => {
   
