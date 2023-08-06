@@ -54,7 +54,7 @@ app.post("/api/uploadProfile", (req, res) => {
   
   req.uploadPath = uploadPathProfile;
 
-  console.log(uploadPathNews)
+  console.log(uploadPathProfile)
   
   upload.single("file")(req, res, function (err) {
     if (err) {
