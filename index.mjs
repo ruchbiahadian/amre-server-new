@@ -65,7 +65,7 @@ app.post("/api/uploadProfile", (req, res) => {
   });
 });
 
-const uploadPathInvoice = path.join(__dirname, 'client/public/invoice');
+const uploadPathInvoice = path.join(__dirname, '/client/public/invoice');
 
 app.post("/api/uploadInvoice", (req, res) => {
 
@@ -82,7 +82,7 @@ app.post("/api/uploadInvoice", (req, res) => {
   });
 });
 
-const uploadPathAbsence = path.join(__dirname, 'client/public/absence');
+const uploadPathAbsence = path.join(__dirname, '/client/public/absence');
 
 app.post("/api/uploadAbsence", (req, res) => {
   
@@ -99,7 +99,7 @@ app.post("/api/uploadAbsence", (req, res) => {
   });
 });
 
-const uploadPathNews = path.join(__dirname, 'client/public/news');
+const uploadPathNews = path.join(__dirname, '/client/public/news');
 
 app.post("/api/upload", (req, res) => {
   
@@ -111,7 +111,7 @@ app.post("/api/upload", (req, res) => {
     }
 
     const file = req.file;
-    console.log('Uploaded file name news:', file.filename); // Add this line
+    console.log('Uploaded file name news:', file.filename); // Add this lin
     res.status(200).json(file.filename);
   });
 });
