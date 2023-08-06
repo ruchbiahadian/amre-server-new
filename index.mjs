@@ -60,6 +60,7 @@ app.post("/api/uploadProfile", (req, res) => {
     }
 
     const file = req.file;
+    console.log('Uploaded file name pr:', file.filename); // Add this line
     res.status(200).json(file.filename);
   });
 });
@@ -76,6 +77,7 @@ app.post("/api/uploadInvoice", (req, res) => {
     }
 
     const file = req.file;
+    console.log('Uploaded file name inv:', file.filename); // Add this line
     res.status(200).json(file.filename);
   });
 });
