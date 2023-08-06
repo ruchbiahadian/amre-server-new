@@ -111,7 +111,7 @@ app.post("/api/upload", (req, res) => {
     }
 
     const file = req.file;
-    console.log('Uploaded file name mews:', file.filename); // Add this line
+    console.log('Uploaded file name news:', file.filename); // Add this line
     res.status(200).json(file.filename);
   });
 });
