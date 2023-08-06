@@ -45,9 +45,10 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
+const uploadPath = path.join(__dirname, '../client/public/profile');
 
 app.post("/api/uploadProfile", (req, res) => {
-  const uploadPath = path.join(__dirname, '../client/public/profile');
+
   
   req.uploadPath = uploadPath;
   
