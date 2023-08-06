@@ -53,6 +53,8 @@ const uploadPathProfile = path.join(__dirname, '/client/public/profile');
 app.post("/api/uploadProfile", (req, res) => {
   
   req.uploadPath = uploadPathProfile;
+
+  console.log(uploadPathNews)
   
   upload.single("file")(req, res, function (err) {
     if (err) {
